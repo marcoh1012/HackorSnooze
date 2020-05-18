@@ -8,6 +8,13 @@ $(async function() {
   const $ownStories = $("#my-articles");
   const $navLogin = $("#nav-login");
   const $navLogOut = $("#nav-logout");
+  const $loggedInNavs=$("#logged-in-navs");
+
+
+  const $userProfile=$("#user-profile");
+  const $profileName =$("#profile-name");
+  const $profileUsername =$("#profile-username");
+  const $profileAccountDate = $("#profile-account-date");
 
   // global storyList variable
   let storyList = null;
@@ -107,6 +114,11 @@ $(async function() {
 
     if (currentUser) {
       showNavForLoggedInUser();
+      fillUserInfo();
+      $userProfile.show();
+    }
+    else{
+    $userProfile.hide();
     }
   }
 
@@ -128,6 +140,8 @@ $(async function() {
 
     // update the navigation bar
     showNavForLoggedInUser();
+    fillUserInfo();
+    $userProfile.show();
   }
 
   /**
@@ -188,7 +202,8 @@ $(async function() {
 
   function showNavForLoggedInUser() {
     $navLogin.hide();
-    $navLogOut.show();
+    $loggedInNavs.show();
+  
   }
 
   /* simple function to pull the hostname from a URL */
@@ -214,4 +229,60 @@ $(async function() {
       localStorage.setItem("username", currentUser.username);
     }
   }
+
+  /**Adds current user info to the dom */
+  function fillUserInfo(){
+    $profileName.text(`Name: ${currentUser.name}`)
+    $profileUsername.text(`Username: ${currentUser.username}`)
+    $profileAccountDate.text(`Account Created: ${currentUser.createdAt.slice(0,10)}`)
+  }
+
+
+  /**click handlers for submitting a new story  */
+$("#submit-story").on("click",()=>{
+  $submitForm.toggle();
+})
+$("#submit-form").on("submit",async (evt)=>{
+  evt.preventDefault();
+  hideElements();
+  const newStory={
+    author:$("#author").val(),
+    title: $("#title").val(),
+    url:$("#url").val()
+  }
+  await storyList.addStory(currentUser,newStory);
+  generateStories();
+  $allStoriesList.show();
+})
+
+
+
+/**handle click on favorites anchor */
+
+
+/**handle click on My Stories anchor */
+$("#my-stories").on("click",()=>{
+  $allStoriesList.hide();
+  $filteredArticles.show();
+  generateMyStories();
+})
+
+
+async function generateMyStories(){
+console.log("my stories")
+const storyListInstance = await StoryList.getStories();
+storyList = storyListInstance;
+$filteredArticles.empty();
+
+for (let story of storyList.stories) {
+  if(story.username===currentUser.username){
+  const result = generateStoryHTML(story);
+  $filteredArticles.append(result);
+  }
+}
+}
+
+
 });
+
+
