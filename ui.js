@@ -210,7 +210,8 @@ $(async function() {
       $filteredArticles,
       $ownStories,
       $loginForm,
-      $createAccountForm
+      $createAccountForm,
+      $favoritedArticles
     ];
     elementsArr.forEach($elem => $elem.hide());
   }
@@ -266,6 +267,9 @@ $("#submit-form").on("submit",async (evt)=>{
     url:$("#url").val()
   }
   await storyList.addStory(currentUser,newStory);
+  $("#author").val("")
+  $("#title").val("")
+  $("#url").val("")
   $allStoriesList.show();
   generateStories();
 })
@@ -294,8 +298,9 @@ $(".articles-container").on("click",".fa-star",async (evt)=>{
 
 /**handle click on favorites tab */
 $("#favorites").on("click",()=>{
-  $allStoriesList.hide();
-  $ownStories.hide();
+  hideElements();
+  //$allStoriesList.hide();
+  //$ownStories.hide();
   $favoritedArticles.show();
   generateFavoriteStories();
 })
@@ -306,11 +311,18 @@ async function generateFavoriteStories(){
   let favStories=currentUser.favorites;
   $favoritedArticles.empty();
   
+  if(favStories.length===0)
+{
+let msg=$("<span>").text(" No Favorite Stories, Click on the star next to a story to add it to your favorites :)")
+$favoritedArticles.append(msg)
+}
+else{
   for (let story of favStories) {
     const result = generateStoryHTML(story,true);
     $favoritedArticles.append(result);
     $favoritedArticles.show();
   }
+}
   }
 
   /** remove click handler on favorites tab*/
@@ -326,7 +338,6 @@ $("#favorited-articles").on("click",".fa-trash-alt",async (evt)=>{
 function checkIfFavorite(story)
 {
   if(currentUser){
-  console.log(currentUser.favorites.length)
   if(currentUser.favorites.length !==0)
   {
     let faves=new Set(currentUser.favorites.map(s=>s.storyId))
@@ -339,8 +350,7 @@ return
 
 /**handle click on My Stories tab */
 $("#my-stories").on("click",()=>{
-  $allStoriesList.hide();
-  $favoritedArticles.hide();
+  hideElements();
   $ownStories.show();
   generateMyStories();
 })
@@ -349,12 +359,20 @@ $("#my-stories").on("click",()=>{
 async function generateMyStories(){
 console.log("my stories")
 const userStories=currentUser.ownStories;
+console.log(userStories)
 $ownStories.empty();
 
+if(userStories.length===0)
+{
+let msg=$("<span>").text(" No User Stories Yet, Try Sumbitting One :)")
+$ownStories.append(msg)
+}
+else{
 for (let story of userStories) {
   const result = generateStoryHTML(story,true);
   $ownStories.append(result);
   $ownStories.show();
+}
 }
 }
 

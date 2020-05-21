@@ -50,8 +50,8 @@ class StoryList {
 
     const response=await axios.post(`${BASE_URL}/stories`, {token:user.loginToken, story:newStory});
     const NewStory= new Story(response.data.story)
-    this.stories.unshift(newStory)
-    user.ownStories.unshift(newStory)
+    this.stories.unshift(NewStory)
+    user.ownStories.unshift(NewStory)
     return(NewStory)
   }
 
@@ -61,8 +61,8 @@ class StoryList {
     console.log(`${BASE_URL}/stories/${storyID}`)
     console.log(user.loginToken)
     await axios.delete(`${BASE_URL}/stories/${storyID}`, {data:{token:user.loginToken}});
-    this.stories =this.stories.filter((story)=>{story.storyId !== storyID})
-    user.ownStories =user.ownStories.filter((story)=>{story.storyId !== storyID})
+    this.stories =this.stories.filter(story=>story.storyId !== storyID)
+    user.ownStories =user.ownStories.filter(story=>story.storyId !== storyID)
   }
   
 }
@@ -130,7 +130,7 @@ class User {
 
     // build a new User instance from the API response
     const existingUser = new User(response.data.user);
-
+    console.log(existingUser)
     // instantiate Story instances for the user's favorites and ownStories
     existingUser.favorites = response.data.user.favorites.map(s => new Story(s));
     existingUser.ownStories = response.data.user.stories.map(s => new Story(s));
@@ -161,6 +161,7 @@ class User {
     // instantiate the user from the API information
     const existingUser = new User(response.data.user);
 
+  console.log(existingUser)
     // attach the token to the newUser instance for convenience
     existingUser.loginToken = token;
 
@@ -169,6 +170,8 @@ class User {
     existingUser.ownStories = response.data.user.stories.map(s => new Story(s));
     return existingUser;
   }
+
+
 
 
      /** add favorited story to array */
