@@ -44,15 +44,27 @@ class StoryList {
    */
 
   async addStory(user, newStory) {
-    console.log("story added")
     // TODO - Implement this functions!
     // this function should return the newly created story so it can be used in
     // the script.js file where it will be appended to the DOM
 
     const response=await axios.post(`${BASE_URL}/stories`, {token:user.loginToken, story:newStory});
     const NewStory= new Story(response.data.story)
+    this.stories.unshift(newStory)
+    user.ownStories.unshift(newStory)
     return(NewStory)
   }
+
+
+  async removeStory(user,storyID)
+  {
+    console.log(`${BASE_URL}/stories/${storyID}`)
+    console.log(user.loginToken)
+    await axios.delete(`${BASE_URL}/stories/${storyID}`, {data:{token:user.loginToken}});
+    this.stories =this.stories.filter((story)=>{story.storyId !== storyID})
+    user.ownStories =user.ownStories.filter((story)=>{story.storyId !== storyID})
+  }
+  
 }
 
 
@@ -115,6 +127,7 @@ class User {
       }
     });
 
+
     // build a new User instance from the API response
     const existingUser = new User(response.data.user);
 
@@ -156,6 +169,26 @@ class User {
     existingUser.ownStories = response.data.user.stories.map(s => new Story(s));
     return existingUser;
   }
+
+
+     /** add favorited story to array */
+
+      async addFavoriteStory(user,storyId)
+     {
+       let token=user.loginToken;
+       await axios.post(`${BASE_URL}/users/${user.username}/favorites/${storyId}`, {token:user.loginToken});
+       const response=await axios.get(`${BASE_URL}/users/${user.username}`,{params:{token}})
+       user.favorites=response.data.user.favorites;
+     }
+
+/** remove favorite story  */
+      async removeFavoriteStory(user,storyId)
+     {
+      let token=user.loginToken;
+       await axios.delete(`${BASE_URL}/users/${user.username}/favorites/${storyId}`, {data:{token:user.loginToken}});
+       const response=await axios.get(`${BASE_URL}/users/${user.username}`,{params:{token}})
+       user.favorites=response.data.user.favorites;
+     }
 }
 
 /**

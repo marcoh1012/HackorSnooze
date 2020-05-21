@@ -15,6 +15,7 @@ $(async function() {
   const $profileName =$("#profile-name");
   const $profileUsername =$("#profile-username");
   const $profileAccountDate = $("#profile-account-date");
+  const $favoritedArticles = $("#favorited-articles")
 
   // global storyList variable
   let storyList = null;
@@ -168,19 +169,33 @@ $(async function() {
    * A function to render HTML for an individual Story instance
    */
 
-  function generateStoryHTML(story) {
+  function generateStoryHTML(story,userStory) {
     let hostName = getHostName(story.url);
+    let star;
+    checkIfFavorite(story)?star="fas":star="far"
+
+
+    let removeIcon;
+    if(userStory)
+    {
+      removeIcon=`<span class="trashcan"> '<i class="fas fa-trash-alt"></i>'</span>`
+    }
+    else{
+      removeIcon="";
+    }
 
     // render story markup
     const storyMarkup = $(`
       <li id="${story.storyId}">
+      <span class="favoriteIcon"><i class="${star} fa-star"></i></span>
         <a class="article-link" href="${story.url}" target="a_blank">
           <strong>${story.title}</strong>
         </a>
         <small class="article-author">by ${story.author}</small>
-        <small class="article-hostname ${hostName}">(${hostName})</small>
+        <small class="article-hostname ${hostName}">(${hostName})</small> ${removeIcon}
         <small class="article-username">posted by ${story.username}</small>
       </li>
+     
     `);
 
     return storyMarkup;
@@ -251,37 +266,105 @@ $("#submit-form").on("submit",async (evt)=>{
     url:$("#url").val()
   }
   await storyList.addStory(currentUser,newStory);
-  generateStories();
   $allStoriesList.show();
+  generateStories();
 })
 
 
 
-/**handle click on favorites anchor */
+/**handle click on favorite star */
+$(".articles-container").on("click",".fa-star",async (evt)=>{
+  
+  if(currentUser)
+  {
+  let storyId=$(evt.target).closest("li").attr("id")
+  $(evt.target).toggleClass("far fas")
+  if($(evt.target).hasClass("fas"))
+  {
+    
+    await currentUser.addFavoriteStory(currentUser, storyId)
+  }
+  else
+  {
+    await currentUser.removeFavoriteStory(currentUser, storyId)
+  }
+  }
+  
+})
+
+/**handle click on favorites tab */
+$("#favorites").on("click",()=>{
+  $allStoriesList.hide();
+  $ownStories.hide();
+  $favoritedArticles.show();
+  generateFavoriteStories();
+})
+
+/**generate html and append to dom for each favorited story*/
+async function generateFavoriteStories(){
+  console.log("my favorites")
+  let favStories=currentUser.favorites;
+  $favoritedArticles.empty();
+  
+  for (let story of favStories) {
+    const result = generateStoryHTML(story,true);
+    $favoritedArticles.append(result);
+    $favoritedArticles.show();
+  }
+  }
+
+  /** remove click handler on favorites tab*/
+$("#favorited-articles").on("click",".fa-trash-alt",async (evt)=>{
+  
+  const id=$(evt.target.parentNode.parentNode).attr("id")
+  await currentUser.removeFavoriteStory(currentUser,id)
+  generateFavoriteStories();
+})
 
 
-/**handle click on My Stories anchor */
+/**check if story if story is one of the users favorite and retun boolean */
+function checkIfFavorite(story)
+{
+  if(currentUser){
+  console.log(currentUser.favorites.length)
+  if(currentUser.favorites.length !==0)
+  {
+    let faves=new Set(currentUser.favorites.map(s=>s.storyId))
+    return(faves.has(story.storyId))
+  }
+}
+return
+}
+
+
+/**handle click on My Stories tab */
 $("#my-stories").on("click",()=>{
   $allStoriesList.hide();
-  $filteredArticles.show();
+  $favoritedArticles.hide();
+  $ownStories.show();
   generateMyStories();
 })
 
 
 async function generateMyStories(){
 console.log("my stories")
-const storyListInstance = await StoryList.getStories();
-storyList = storyListInstance;
-$filteredArticles.empty();
+const userStories=currentUser.ownStories;
+$ownStories.empty();
 
-for (let story of storyList.stories) {
-  if(story.username===currentUser.username){
-  const result = generateStoryHTML(story);
-  $filteredArticles.append(result);
-  }
+for (let story of userStories) {
+  const result = generateStoryHTML(story,true);
+  $ownStories.append(result);
+  $ownStories.show();
 }
 }
 
+/** remove click handler on my stories*/
+$("#my-articles").on("click",".fa-trash-alt",async (evt)=>{
+  
+  const id=$(evt.target.parentNode.parentNode).attr("id")
+  await storyList.removeStory(currentUser,id)
+  generateMyStories()
+})
 
 });
 
