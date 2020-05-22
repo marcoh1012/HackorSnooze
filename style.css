@@ -4,6 +4,10 @@ html {
 
 body {
   margin: 8px 7.5vw;
+  background-image: url("https://www.ecopetit.cat/wpic/mpic/52-524068_steam-background-hacker.jpg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
 }
 
 h1 {
@@ -37,13 +41,13 @@ a:hover {
 
 
 
-nav {
+/* nav {
   display: flex;
   background-color: #ff6600;
   align-items: center;
   padding: 5px 20px;
   border-radius: 3px 3px 0 0;
-}
+} */
 
 .main-nav-links {
   margin: 0 15px;
@@ -62,7 +66,7 @@ nav {
   display: flex;
   flex-direction: column;
   align-self: center;
-  background-color: #f6f6ef;
+  background-color: #19335a;
 }
 
 form {
@@ -139,21 +143,25 @@ form > hr {
 }
 
 .articles-list > li {
-  color: gray;
+  color: white;
   font-size: 0.8rem;
   margin: 10px 0;
   cursor: pointer;
 }
 
-.star,
-.trash-can,
+.fa-star,
+.fa-trash-alt,
 .pencil {
-  font-size: 0.75rem;
-  margin: 0 2px;
+  font-size: 1rem;
+  margin: 2px 2px;
   cursor: pointer;
 }
 
-.trash-can:hover {
+.fa-star{
+  color: rgb(15, 1, 54);
+}
+
+.fa-trash-alt:hover {
   color: crimson;
 }
 
@@ -162,7 +170,7 @@ form > hr {
 }
 
 .article-link > strong {
-  color: black;
+  color: rgb(110, 225, 245);
   font-size: 0.85rem;
   font-weight: normal;
   margin: 18px 0;
@@ -208,8 +216,12 @@ form > hr {
 }
 
 #user-profile > * {
+  color: white;
   margin: 10px 0;
 }
+
+#login-form, #create-account-form,#my-articles, #favorited-articles, #submit-form
+{color:white;}
 
 
 /** responsive queries for tightening things up for mobile. */
@@ -226,3 +238,4 @@ form > hr {
     margin: 8px auto;
   }
 }
+
