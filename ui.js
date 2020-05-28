@@ -314,7 +314,6 @@ $("#favorites").on("click",()=>{
 
 /**generate html and append to dom for each favorited story*/
 async function generateFavoriteStories(){
-  console.log("my favorites")
   let favStories=currentUser.favorites;
   $favoritedArticles.empty();
   
@@ -364,9 +363,7 @@ $("#my-stories").on("click",()=>{
 
 
 async function generateMyStories(){
-console.log("my stories")
 const userStories=currentUser.ownStories;
-console.log(userStories)
 $ownStories.empty();
 
 if(userStories.length===0)
