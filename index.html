@@ -19,7 +19,6 @@
     
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#userNavs" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" >
       <span class="navbar-toggler-icon"></span> 
-      <!-- <span class="fas fa-hamburger"></span> -->
     </button>
     <div class="collapse navbar-collapse" id="userNavs">
       
@@ -47,7 +46,8 @@
     <span class="d-none d-md-block mx-1">&#183;</span>
     <li class="nav-item"></li>
     <a  id="nav-logout" href="#">
-      <small>logout</small>
+      <span id="usrname"></span>
+      <small>(logout)</small>
     </a>
   </li>
   </section>
@@ -104,6 +104,9 @@
     <form action="#" id="login-form" class="account-form hidden" method="post">
       <h4>Login</h4>
       <div class="login-input">
+        <div class="hidden" id="wrongLogIn" style="color:red; margin-bottom: 4px;">
+          <h4> Wrong username or password try again!</h4>
+        </div>
         <label for="login-username">username</label>
         <input id="login-username" type="text">
       </div>

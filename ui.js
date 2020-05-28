@@ -36,13 +36,18 @@ $(async function() {
     // grab the username and password
     const username = $("#login-username").val();
     const password = $("#login-password").val();
-
+try{
     // call the login static method to build a user instance
     const userInstance = await User.login(username, password);
     // set the global user to the user instance
     currentUser = userInstance;
     syncCurrentUserToLocalStorage();
     loginAndSubmitForm();
+}
+catch(e)
+{ 
+  $("#wrongLogIn").show();
+}
   });
 
   /**
@@ -218,6 +223,7 @@ $(async function() {
 
   function showNavForLoggedInUser() {
     $navLogin.hide();
+
     $loggedInNavs.show();
   
   }
@@ -248,6 +254,7 @@ $(async function() {
 
   /**Adds current user info to the dom */
   function fillUserInfo(){
+    $('#usrname').text(`${currentUser.username}`)
     $profileName.text(`Name: ${currentUser.name}`)
     $profileUsername.text(`Username: ${currentUser.username}`)
     $profileAccountDate.text(`Account Created: ${currentUser.createdAt.slice(0,10)}`)
